@@ -13,7 +13,7 @@
 /* Chordify Font */
 @font-face {
     font-family: "TypoHoop";
-    src: url('../../../../public/fonts/TypoHoop_Bold.otf');
+    src: url('/fonts/TypoHoop_Bold.otf');
 }
 
 /* Container that contains the entire webpage */
