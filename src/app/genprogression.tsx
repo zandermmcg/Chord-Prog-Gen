@@ -1,8 +1,8 @@
-import { constants } from 'node:http2';
 import { fetchChords } from './fetchChords';
 import { fetchChordMedia } from './fetchChordMedia';
 import { Chord } from "tonal";
 import ChordButton from './components/chordbutton';
+import ChordGenError from './components/chordgenerror';
 
 // Define the chromatic scale and scale intervals for building scales
 const CHROMATIC_SCALE: string[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -23,6 +23,7 @@ const CHORD_INTERVALS: {[Key: string]: number[]} =
     "minor7": [0, 3, 7, 10],  // Root, Minor 3rd, Perfect 5th, Minor 7th
     "diminished7": [0, 3, 6, 9],  // Root, Minor 3rd, Diminished 5th, Diminished 7th
 };
+
 // Roman Map for parsing roman numerals
 const ROMAN_MAP: {[Key: string]: number} = {
     "i": 1,
@@ -33,6 +34,7 @@ const ROMAN_MAP: {[Key: string]: number} = {
     "vi": 6,
     "vii": 7
 };
+
 // Common starting chords to determine first chord
 const STARTING_CHORDS: {[Key: string]: string[][]} =
 {
@@ -40,8 +42,10 @@ const STARTING_CHORDS: {[Key: string]: string[][]} =
     "min": [["i", "b1"], ["vi", "6"], ["V", "5"]]
 }
 
+// Helper function to determine the key based on form info passed into the function
 function determineKey(note: string, accidental: string, mode: string)
 {
+    // Alter root if there is an accidental
     if (accidental === "#")
         note = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(note)+1)%12];
     else if (accidental === "b")
@@ -67,6 +71,7 @@ function generateScale(key: string) {
     return scale;
 }
 
+// Mega helper function to parse the raw roman numeral returned by the API
 function parseNumeral(rawNumeral: string)
 {
     let numeralInitial: string = rawNumeral; // Initial RN State
@@ -159,6 +164,7 @@ function parseNumeral(rawNumeral: string)
         }
     }
 
+    // Chord data in map form to make it easy to build the chord
     return {
         "numeral": rawNumeral,
         "numeral_initial": numeralInitial,
@@ -170,6 +176,8 @@ function parseNumeral(rawNumeral: string)
     };
 }
 
+// Mega helper function to build the chord with the given chord data returned
+// from the function above. This is where the music theory algorithms come in
 function buildChord(key: string, chordInfo: {[key:string]: any})
 {
     // Start by grabbing the chord note info
@@ -193,20 +201,25 @@ function buildChord(key: string, chordInfo: {[key:string]: any})
             break;
     }
 
+    // Chromatic Alteration will change the root of the chord, so we need to 
+    // figure that out first.
     if (chordInfo["chrom_alteration"] !== "")
     {
-        let alterationNum: number;
-
-        if (chordInfo["chrom_alteration"] === "flat") alterationNum = -1;
-        else alterationNum = 1;
-        
-        root = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(root)+alterationNum)%12];
+        if (chordInfo["chrom_alteration"] === "flat")
+            root = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(root)-1+12)%12];
+        else
+            root = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(root)+1)%12];
     }
 
+    // Similar to chrom alteration, secondary chords will change the root
+    // Chords from the api will never be chrom altered and secondary, so we don't
+    // need to worry about that.
     if (chordInfo["secondary"] !== "")
     {
         let newKeyType:string;
         
+        // If the original chord is minor, we need to use harmonic minor
+        // Just a rule for secondary chords
         if (numeral.toLowerCase() === numeral)
             newKeyType = "minharmonic";
         else
@@ -215,6 +228,7 @@ function buildChord(key: string, chordInfo: {[key:string]: any})
         const secondaryScale = generateScale(root+newKeyType);
         const secondaryNumeralInt = ROMAN_MAP[chordInfo["secondary"].toLowerCase()];
 
+        // Change our root and numeral to the secondary
         root = secondaryScale[secondaryNumeralInt-1];
         numeral = chordInfo["secondary"];
     }
@@ -242,6 +256,7 @@ function buildChord(key: string, chordInfo: {[key:string]: any})
     let nextNote: string;
     const noteIntervals = CHORD_INTERVALS[chordType];
 
+    // Use proper intervals depending on the chordType
     for (let interval of noteIntervals)
     {
         nextNote = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(root)+interval)%12];
@@ -252,16 +267,17 @@ function buildChord(key: string, chordInfo: {[key:string]: any})
     if (chordInfo["seventh"].length > 1)
     {
         let diff: number;
+        let alteredNote: string;
         if (chordInfo["seventh"] === "b")
-            diff = -1;
+            alteredNote = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(completedChord[3])-1+12)%12];
         else
-            diff = 1;
+            alteredNote = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(completedChord[3])+1)%12];
 
-        let alteredNote: string = CHROMATIC_SCALE[(CHROMATIC_SCALE.indexOf(completedChord[3])+diff)%12]
         completedChord[3] = alteredNote;
     }
     
-    // Do inversions last bc its the same all the different chord types
+    // Do inversions last bc its the same for all the different chord types
+    // And it just rearranges the already built chord to change which note is in the bass
     let invertNum = 0; // How many times to pop the front note and push it
 
     // These numbers are based on music theory
@@ -300,7 +316,8 @@ function buildChord(key: string, chordInfo: {[key:string]: any})
 }
 
 // Master function to generate the entire chord progression
-// Returns a list of list of notes, each list is a chord
+// Returns a list of <ChordButton/>s containing all the chord info,
+// ready to be interacted with :)
 export async function genProgression(currentState: React.JSX.Element[], formData: FormData)
 {
     // Gather Data from form
@@ -320,23 +337,31 @@ export async function genProgression(currentState: React.JSX.Element[], formData
 
     let key: string = determineKey(keyNote, keyAccidental, keyMode);
 
-    console.log(key);
-
     // Generate a likely chord based on API data
     // Adds each new chord to the childpath and the current Chord Progression
     for (let i = 1; i < length; i++)
     {   
-        //continue;
-        let data = await fetchChords(currChildPath);
-        const dataLength = data.length
+        let data = null;
+        
+        try {
+            data = await fetchChords(currChildPath);
+        } catch (error) {
+            console.log(error);
+            return [<ChordGenError key="1"/>];
+        }
 
-        // Gen random number
+        // Choose random chord from the first half of the returned chords
+        // This is just to cut off the chords that rarely follow the current childpath
         let nextChord = data[Math.floor(Math.random()*(Math.floor(data.length/2)))];
-
-        console.log(nextChord);
 
         chordProgression.push(nextChord["chord_HTML"]);
         currChildPath = nextChord["child_path"];
+        
+        // For larger chord progressions, the API will return NULL the more chords
+        // in the childpath. To fix this, there will never be more than 4. We achieve
+        // this by popping the first chord each time off after reaching 4 chords
+        if (i > 3)
+            currChildPath = currChildPath.slice(currChildPath.indexOf(',')+1);
     }
 
     let chordsParsed: {[Key: string]: any}[] = [];
@@ -346,7 +371,6 @@ export async function genProgression(currentState: React.JSX.Element[], formData
     // music theory knowledge. 
     // This is helpful to determine which notes are in the scale
     // based on the predetermined key.
-    // **RN = Roman Numeral**
     for (let chordNumeral of chordProgression)
         chordsParsed.push(parseNumeral(chordNumeral));
     
@@ -356,18 +380,23 @@ export async function genProgression(currentState: React.JSX.Element[], formData
     for (let chordInfo of chordsParsed)
         chordProgressionNotes.push(buildChord(key, chordInfo));
 
+    // Now that the chords are built, we will use an external library 'Tonal' to detect
+    // the names of the chords - useful for the ScalesChords API, which can send audio of the
+    // chord if we POST the name of it
     let chordDetections: string[] = [];
     let chordImages: React.JSX.Element[] = [];
 
-    let keyNum: number = 1;
+    let keyNum: number = 1; // To give each <ChordButton/> a key
     for (let c of chordProgressionNotes)
     {
-        //continue;
         chordDetections = Chord.detect(c);
 
         if (chordDetections.length != 0)
         {
             let chosenChordIndex: number = 0;
+            
+            // Sometimes it will detect multiple possible chord names,
+            // we search for the one that matches the root of the chord
             for (let detection of chordDetections)
             {
                 if (detection.slice(0, 2).indexOf(c[0]) != -1)
@@ -377,15 +406,23 @@ export async function genProgression(currentState: React.JSX.Element[], formData
                 }
             }
 
+            // Replace M with Maj for the ScalesChords API, as it doesn't differentiate 'M' and 'm'
             let detectedChord = chordDetections[chosenChordIndex].replace("M", "Maj");
+            
+            let chordMediaData: string = "";
 
-            console.log(`${c}: ${detectedChord}`);
-            
-            const chordMediaData = await fetchChordMedia(detectedChord, "sound");
+            try {
+                chordMediaData = await fetchChordMedia(detectedChord, "sound");
+            } catch (error) {
+                console.log(error);
+                return [<ChordGenError key="1"/>];
+            }
+
+            // Slice the audio link from the result of the ScalesChords API
             const chordAudioSrcOgg = chordMediaData.slice(chordMediaData.indexOf("src=")+5, chordMediaData.indexOf("type=")-2);
-            const chordAudioSrcMp3 = chordMediaData.slice(chordMediaData.indexOf("src=", chordMediaData.indexOf("type="))+5, chordMediaData.indexOf("type=", chordMediaData.indexOf("type=")+1)-2);
+            //const chordAudioSrcMp3 = chordMediaData.slice(chordMediaData.indexOf("src=", chordMediaData.indexOf("type="))+5, chordMediaData.indexOf("type=", chordMediaData.indexOf("type=")+1)-2);
             
-            chordImages.push(<ChordButton key={keyNum} audioUrl={chordAudioSrcOgg}></ChordButton>);
+            chordImages.push(<ChordButton key={keyNum} audioUrl={chordAudioSrcOgg} chordName={detectedChord} notes={c}/>);
             keyNum += 1;
         }
     }

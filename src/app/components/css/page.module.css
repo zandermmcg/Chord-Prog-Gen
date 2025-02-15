@@ -1,0 +1,98 @@
+:root
+{
+    --dark1: #121212;
+    --dark2: #252526;
+    --dark3: #2d2d30;
+    --dark4: #3e3e42;
+
+    --purple1: #473d98;
+    --purple2: #b0a5f9;
+    --purple3: #d9d2fb;
+}
+
+/* Chordify Font */
+@font-face {
+    font-family: "TypoHoop";
+    src: url('../../../../public/fonts/TypoHoop_Bold.otf');
+}
+
+/* Container that contains the entire webpage */
+.body
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 100%;
+    font-family: Verdana, sans-serif;
+}
+
+/* Container that contains the Chordify title and signature */
+.title
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Chordify Title */
+.chordify_title span
+{
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    background-image: linear-gradient(45deg, var(--purple1), var(--purple2), var(--purple3), var(--purple2), var(--purple1));
+    color: transparent;
+    background-clip: text;
+    display: inline-block;
+    font-family: "TypoHoop";
+    font-size: 4.2em;
+    margin: 0;
+    line-height: 1.2em;
+    animation: wave 3s ease-in-out infinite;
+    padding: 0;
+}
+
+/* Set animation delay for each letter in the Chordify title */
+.chordify_title span:nth-child(1){ animation-delay: 0s }
+.chordify_title span:nth-child(2){ animation-delay: 0.2s }
+.chordify_title span:nth-child(3){ animation-delay: 0.4s }
+.chordify_title span:nth-child(4){ animation-delay: 0.6s }
+.chordify_title span:nth-child(5){ animation-delay: 0.8s }
+.chordify_title span:nth-child(6){ animation-delay: 1s }
+.chordify_title span:nth-child(7){ animation-delay: 1.2s }
+.chordify_title span:nth-child(8){ animation-delay: 1.4s }
+
+/* Signature below the Chordify Title */
+.signature
+{
+    border-style: solid;
+    margin: 0;
+    padding: 0;
+    background-image: linear-gradient(45deg, var(--purple2), var(--purple3), var(--purple2));
+    color: transparent;
+    background-clip: text;
+    background-size: 300% 300%;
+    animation: gradient 15s ease infinite;
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes gradient {
+    0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}

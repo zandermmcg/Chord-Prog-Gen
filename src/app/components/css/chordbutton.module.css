@@ -1,0 +1,74 @@
+:root{
+    --dark1: #121212;
+    --dark2: #252526;
+    --dark3: #2d2d30;
+    --dark4: #3e3e42;
+
+    --offwhite: #faf9f6;
+
+    --purple1: #473d98;
+    --purple2: #b0a5f9;
+    --purple3: #d9d2fb;
+}
+
+/* Entire Chord Button Container */
+.chord_module {
+    background-color: var(--dark3);
+    color: var(--offwhite);
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    text-align: center;
+    padding: 12px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+    border-style: solid;
+    border-width: 3px;
+    border-color: transparent;
+}
+
+.chord_module:hover {
+    transform: scale(1.05);
+    border-color: var(--purple2);
+}
+
+/* Title of Container (name of chord) */
+.chord_title {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* Notes in the chord */
+.chord_notes {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Buttons container inside chordbutton container*/
+.chord_buttons {
+    display: flex;
+    gap: 6px;
+}
+
+/* Individual button CSS [play, showimage (not yet implemented)]*/
+.chord_button {
+    background-color: var(--dark4);
+    color: var(--offwhite);
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.chord_button:hover {
+    background-color: #8a74f9;
+}

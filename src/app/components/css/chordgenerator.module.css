@@ -1,0 +1,189 @@
+:root {
+    --purple1: #473d98;
+    --purple2: #b0a5f9;
+    --purple3: rgb(217, 210, 251);
+
+    --offwhite: #faf9f6;
+
+    --dark1: #121212;
+    --dark2: #252526;
+    --dark3: #2d2d30;
+    --dark4: rgb(62, 62, 66);
+}
+
+/* Container for the entire ChordGenerator module */
+.chord_gen_container
+{
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+}
+
+/* Container for the entire chord generator form */
+.chord_form
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Container for all form selections */
+.chord_selections
+{
+    display: flex;
+    gap: 4em;
+    padding: 2em 0 2em 0;
+}
+
+/* All dropdown selections (Note, Accidental, Mode) */
+.select 
+{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    background-color: var(--dark3);
+    color: var(--offwhite);
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 40px 10px 15px;
+    cursor: pointer;
+    
+    /* Dropdown arrow */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.select:hover 
+{
+    background-color: var(--dark4);
+}
+
+.select:focus 
+{
+    outline: none;
+    box-shadow: 0 0 5px rgba(62, 62, 66, 0.8);
+}
+
+/* Wrapper container for the button that selects how many chords to generate
+   Needed to be wrapped because it secretly contains multiple elements */
+.chord_amt_wrapper 
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The actual button in the container */
+.chord_amt_button 
+{
+    position: relative;
+    background-color: var(--dark3);
+    color: var(--offwhite);
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    width: 80px;
+    height: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Top half hover effect for that button */
+.chord_amt_button.top_hover::before 
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: transparent;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.chord_amt_button.top_hover:hover::before 
+{
+    background: rgba(255, 255, 255, 0.081);
+}
+
+/* Bottom half hover effect for that button */
+.chord_amt_button.bottom_hover::after 
+{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: transparent;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.chord_amt_button.bottom_hover:hover::after 
+{
+    background: rgba(255, 255, 255, 0.081);
+}
+
+/* Button at the bottom that submits the form (GENERATE CHORDS) */
+.submit_form 
+{
+    background-color: var(--dark3);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+    color: var(--offwhite);
+    font-size: 18px;
+    font-weight: bold;
+    border-style:none;
+    border-style: solid;
+    border-width: 3px;
+    border-color: transparent;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    text-transform: uppercase;
+}
+
+.submit_form:not(:disabled):hover 
+{
+    background-color: var(--dark4);
+    border-color: var(--purple2);
+    box-shadow: -5px -5px 5px rgba(217, 210, 251, 0.15), 5px 5px 5px rgba(217, 210, 251, 0.15),
+                5px -5px 5px rgba(217, 210, 251, 0.15), -5px 5px 5px rgba(217, 210, 251, 0.15);
+}
+
+.submit_form:not(:disabled):active 
+{
+    background-color: #5540c8;
+    transform: scale(0.98);
+}
+
+.submit_form:disabled 
+{
+    background-color: var(--dark2);
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+/* Container that will contain all the chord buttons once generated */
+.chord_container 
+{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap; /* Allows wrapping if screen is too small */
+    justify-content: center;
+}
