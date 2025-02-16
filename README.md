@@ -35,6 +35,30 @@ Needless to say, Chordify should be up and running in no time! I am hoping that 
 
 ## Website Preview
 
+### Main Page
+
+<p align="center">
+<img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_main.gif" width="600" height="348"/>
+</p>
+
+### Customize Musical Key
+
+<p align="center">
+<img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_btns.gif" width="600" height="348"/>
+</p>
+
+### Generate Chords
+
+<p align="center">
+<img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_gen.gif" width="600" height="348"/>
+</p>
+
+### PLay Chords
+
+<p align="center">
+<img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_play.gif" width="600" height="348"/>
+</p>
+
 ## Running this Project
 
 To see and use this project for yourself, you can run this project locally on your device. First, ensure that you have downloaded the latest version of Node.js. You can check this by running `node -v`. If you don't, you can install it from the [Node.js official site](https://nodejs.org/en/download). Next, clone this repository onto your device and navigate to the project directory. Then, run
