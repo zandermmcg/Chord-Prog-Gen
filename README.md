@@ -1,4 +1,4 @@
-# Chordify - Chord Progression Generator by Zander McGinley
+# Chordify - Chord Progression Generator
 
 ## Project Description
 
