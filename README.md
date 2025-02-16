@@ -53,7 +53,7 @@ Needless to say, Chordify should be up and running in no time! I am hoping that 
 <img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_gen.gif" width="600" height="348"/>
 </p>
 
-### PLay Chords
+### Play Chords
 
 <p align="center">
 <img src="https://github.com/zandermmcg/Chordify/blob/main/demos/chordifydemo_play.gif" width="600" height="348"/>
