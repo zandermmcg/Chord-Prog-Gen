@@ -3,7 +3,7 @@
 export async function fetchChords(childpath: string) 
 {
     const URL = "https://api.hooktheory.com/v1/trends/nodes?cp=" + childpath;
-    const KEY = process.env.AUTH;
+    const KEY = process.env.API_KEY;
     const requestOptions = 
     {
         method: "GET",
